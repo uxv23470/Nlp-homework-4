@@ -1,1 +1,274 @@
+Q6. Multi-Input Feedforward
+Given:
+Inputs: 
+𝑥=[2,1,3]
+x=[2,1,3]
+2 hidden sigmoid units, 1 sigmoid output
+(Weights A and B not numerically shown → I’ll give the general computation steps so you can plug values)
+(a) Hidden layer computations
 
+Let:
+
+𝐴=
+A= weight matrix (including bias row)
+
+Add bias input:
+
+𝑥′=[2,1,3,1]x′=[2,1,3,1]
+
+For each hidden unit 
+ij:
+
+Pre-activation:
+𝑧𝑗=𝑤1𝑗𝑥1+𝑤2𝑗𝑥2+𝑤3𝑗𝑥3+𝑏𝑗z=w1j
+	​
+x1+w2j
+	​
+x2+w3j
+	​
+x3+bj
+	​
+
+Activation (sigmoid):
+ℎ𝑗=𝜎(𝑧𝑗)=11+𝑒−𝑧𝑗hj=σ(zj)=1+e−zj1
+	​
+
+
+So you compute:
+
+ℎ1=𝜎(𝑧1),ℎ2=𝜎(𝑧2)h1=σ(z1),h2=σ(z2)
+(b) Output computation
+
+Let:
+
+𝐵=[𝑣1,𝑣2,𝑏]
+B=[v1,v2,b]
+Output pre-activation:
+𝑧=v1ℎ1+𝑣2ℎ2+bz=v1
+h1+v2h2+b
+Output activation:
+𝑦=𝜎(𝑧)
+y=σ(z)
+(c) Binary Cross-Entropy Loss
+
+Given 
+𝑡
+=
+1
+t=1:
+
+𝐿=−[𝑡log⁡𝑦+(1−𝑡)log(1−𝑦)]
+L=−[tlogy+(1−t)log(1−y)]
+
+Since 
+𝑡
+=
+1
+t=1:
+𝐿=−log⁡(𝑦)
+L=−log(y)
+Q7. XOR with ReLU Network
+
+Assume standard XOR ReLU setup.
+
+Inputs:
+(0,0),(0,1),(1,0),(1,1)
+(0,0),(0,1),(1,0),(1,1)
+(a) Outputs
+
+Typical XOR ReLU network computes:
+
+Input	Output
+(0,0)	0
+(0,1)	1
+(1,0)	1
+(1,1)	0
+
+With extra hidden unit, compute:
+
+ℎ
+3
+=
+ReLU
+(𝑤1𝑥1+𝑤2x2+𝑏)h3=ReLU(w1x1+w2​x2+b)
+Then:
+
+𝑦=ReLU(𝑣1ℎ1+𝑣2ℎ2+𝑣3ℎ3+𝑏)
+y=ReLU(v1h1+v2h2+v3h3+b)
+
+If weights are consistent → outputs remain same
+Otherwise → may slightly shift
+(b) Decision Boundary Comparison
+2 hidden units → minimal piecewise linear boundary
+3 hidden units → more flexible boundary (more regions)
+
+
+(c) Does it still compute XOR exactly?
+Yes, if weights are chosen properly
+No, if extra unit disturbs balance
+
+
+(1,1) might incorrectly become 1
+(0,0) might shift above 0
+Q8. Decision Boundary and Misclassification
+Given:
+𝑦=sign(𝑤1𝑥1+𝑤2𝑥2+𝑏)
+y=sign(w1x1+w2x2​+b)
+𝑤1=1,𝑤2=−2, 𝑏=1w1=1,w2=−2,b=1
+(a) Decision Boundary
+
+Set output = 0:
+
+𝑥1−2𝑥2+1=0x1−2x2+1=0𝑥1=2𝑥2−1x1​=2x2−1
+
+(b) Classification
+
+Evaluate each point:
+
+1. (2,1), label = 12−2(1)+1=1
+⇒
+correct (1)
+2−2(1)+1=1⇒correct (1)
+2. (1,3), label = 0
+1−6+1=−4
+⇒
+correct (0)
+1−6+1=−4⇒correct (0)
+3. (3,2), label = 1
+3−4+1=0
+⇒
+boundary → usually classify as 1
+3−4+1=0⇒boundary → usually classify as 1
+
+✔ Correct
+4. (0,1), label = 0
+0−2+1=−1
+⇒
+correct (0)
+0−2+1=−1⇒correct (0)
+Misclassified points:
+
+(c) Perceptron Loss
+Loss=#
+misclassified points=0
+Loss=#misclassified points=0
+(d) Weight Update
+
+Since no mistakes,
+Weights remain:
+w1=1,w2=−2,b=1
+
+Q3. Neural Networks: Structure, Activation, Representation
+(a) Non-linear activations
+
+Non-linear activation functions allow neural networks to learn complex,
+ non-linear relationships in data. Without them, 
+ the network would behave like a linear model regardless of depth.
+  This would severely limit its expressive power.
+
+(b) Deep vs shallow models
+
+Deep networks learn hierarchical features, where lower layers capture simple patterns 
+and higher layers combine them into complex representations.
+ Shallow models like logistic regression cannot build such multi-level abstractions.
+  Hence, deep models are more powerful for complex tasks like vision and language.
+
+1) RNN Families & Use-Cases
+(a) Mapping tasks
+Next-word prediction → many-to-many (aligned)
+Each input word produces an output at the same time step (predict next token sequentially).
+Sentiment of a sentence → many-to-one
+Entire sequence is processed to produce a single output label.
+NER → many-to-many (aligned)
+Each input word gets a corresponding output tag.
+Machine translation → many-to-many (unaligned)
+Input and output sequences differ in length and alignment.
+(b) Unrolling & BPTT
+
+Unrolling expands the RNN across time steps,
+ turning it into a deep network where each step shares the same weights.
+This allows gradients to be computed across time using Backpropagation Through Time (BPTT).
+
+(c) Weight sharing
+Advantage: Reduces number of parameters and improves generalization.
+Limitation: Limits flexibility since the same transformation is applied at every time step.
+2) Vanishing Gradients & Remedies
+(a) Vanishing gradient problem
+
+Gradients shrink exponentially as they are backpropagated through many time steps.
+This makes it difficult for the model to learn long-range dependencies.
+As a result, earlier information is often forgotten.
+
+(b) Architectural solutions
+LSTM: Uses gates and cell state to preserve gradients over long sequences.
+GRU: Simplifies gating while still maintaining better gradient flow.
+(c) Training technique
+
+Gradient clipping prevents gradients
+from becoming too small or too large by restricting their values.
+This stabilizes training and helps maintain effective learning.
+
+3) LSTM Gates & Cell State
+(a) Gates
+Forget gate (sigmoid): Decides what information to discard from the cell state.
+Input gate (sigmoid + tanh): Controls what new information to add.
+Output gate (sigmoid): Determines what part of the cell state to output.
+(b) Linear path
+
+The cell state allows information to flow with minimal modification through time. 
+This creates a near-linear path for gradients, reducing vanishing effects.
+
+(c) Remember vs expose
+
+“What to remember” is controlled by the forget and input gates deciding what stays in memory.
+“What to expose” is controlled by the output gate determining what is sent to the next layer.
+
+4) Self-Attention
+(a) Q, K, V
+
+Query represents the current token asking for information,
+Key represents all tokens’ identities, and Value contains the actual information.
+Attention scores are computed using Q and K, then applied to V.
+
+(b) Dot-product attention
+Attention
+(𝑄,𝐾,𝑉)=softmax(𝑄𝐾𝑇𝑑𝑘)𝑉Attention(Q,K,V)=softmax(dkQKT)V
+(c) Why divide by 𝑑𝑘dk?
+
+It prevents dot products from becoming too large as dimensionality increases.
+This keeps the softmax stable and gradients well-behaved.
+
+5) Multi-Head Attention & Residuals
+(a) Multi-head attention
+
+Multiple heads allow the model to focus on different parts of the sequence simultaneously.
+Each head learns different relationships, improving representation power.
+
+(b) Add & Norm
+
+Residual connections help gradients flow easily through deep networks.
+Layer normalization stabilizes training and speeds up convergence.
+
+(c) Example relation
+
+One head might capture subject-verb agreement,
+while another captures coreference between pronouns and nouns.
+
+6) Encoder–Decoder with Masked Attention
+(a) Masked self-attention
+
+It prevents the decoder from seeing future tokens during training.
+This ensures predictions depend only on past outputs, maintaining causality.
+
+(b) Self vs cross-attention
+
+Encoder self-attention relates words within the input sequence.
+Cross-attention connects decoder tokens with encoder outputs
+to incorporate source information.
+
+(c) Inference generation
+
+During inference, the model generates one token
+at a time using previously generated outputs as input.
+Each new token is appended and fed back into the decoder.
+This process continues until an end token is produced.
